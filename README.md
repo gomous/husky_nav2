@@ -151,6 +151,8 @@ ros2 launch husky_navigation husky_teleop.launch.py
 │   └── husky_ros2.urdf.xacro # Modular robot URDF
 │
 ├── src/                    # Custom nodes (future)
+├── slam.mkv                # SLAM mapping demo video
+├── nav.mkv                 # Navigation demo video
 ├── CMakeLists.txt          # Build configuration
 ├── package.xml             # Package metadata
 └── README.md               # This file
@@ -227,8 +229,19 @@ slam_toolbox:
 
 ## 📹 Demo Videos
 
-- **SLAM Mapping**: `slam.mkv` - Real-time map building demonstration
-- **Autonomous Navigation**: `nav.mkv` - Nav2 path planning and execution
+Watch these demonstrations to see the system in action:
+
+### SLAM Mapping Demo
+![SLAM Demo](slam.mkv)
+
+Real-time map building as the robot explores the environment using slam_toolbox.
+
+### Autonomous Navigation Demo
+![Navigation Demo](nav.mkv)
+
+Nav2 path planning and execution with dynamic obstacle avoidance.
+
+> **Note**: Video files are located in the root directory of the repository. Download them to view the full demonstrations.
 
 ## 🔧 Troubleshooting
 
