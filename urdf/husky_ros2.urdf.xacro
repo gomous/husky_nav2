@@ -1,0 +1,363 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="husky">
+
+  <!-- Properties -->
+  <xacro:property name="M_PI" value="3.14159265359"/>
+  
+  <!-- Base dimensions -->
+  <xacro:property name="base_x_size" value="0.98740000" />
+  <xacro:property name="base_y_size" value="0.57090000" />
+  <xacro:property name="base_z_size" value="0.24750000" />
+  
+  <!-- Wheel properties -->
+  <xacro:property name="wheelbase" value="0.512" />
+  <xacro:property name="track" value="0.556" />
+  <xacro:property name="wheel_vertical_offset" value="0.03282" />
+  <xacro:property name="wheel_length" value="0.1143" />
+  <xacro:property name="wheel_radius" value="0.1651" />
+  <xacro:property name="wheel_mass" value="2.0" />
+
+  <!-- Top Chassis -->
+  <link name="top_chassis_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file://$(find husky_minimal)/meshes/top_chassis.dae" />
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="top_chassis_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="top_chassis_link" />
+  </joint>
+
+  <!-- Front Bumper -->
+  <link name="front_bumper_link">
+    <visual>
+      <geometry>
+        <mesh filename="file://$(find husky_minimal)/meshes/bumper.dae" />
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="front_bumper_joint" type="fixed">
+    <origin xyz="0.48 0 0.091" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="front_bumper_link" />
+  </joint>
+
+  <!-- Rear Bumper -->
+  <link name="rear_bumper_link">
+    <visual>
+      <geometry>
+        <mesh filename="file://$(find husky_minimal)/meshes/bumper.dae" />
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="rear_bumper_joint" type="fixed">
+    <origin xyz="-0.48 0 0.091" rpy="0 0 3.14159" />
+    <parent link="base_link" />
+    <child link="rear_bumper_link" />
+  </joint>
+
+  <!-- User Rail -->
+  <link name="user_rail_link">
+    <visual>
+      <geometry>
+        <mesh filename="file://$(find husky_minimal)/meshes/user_rail.dae" />
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="user_rail_joint" type="fixed">
+    <origin xyz="0.272 0 0.245" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="user_rail_link" />
+  </joint>
+
+  <!-- Top Plate -->
+  <link name="top_plate_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file://$(find husky_minimal)/meshes/top_plate.dae" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find husky_minimal)/meshes/top_plate.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="top_plate_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="top_plate_link"/>
+    <origin xyz="0.0812 0 0.245" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Top Plate Front Link -->
+  <link name="top_plate_front_link"/>
+  
+  <joint name="top_plate_front_joint" type="fixed">
+    <parent link="top_plate_link" />
+    <child link="top_plate_front_link"/>
+    <origin xyz="0.36367 0 0.00639" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Top Plate Rear Link -->
+  <link name="top_plate_rear_link"/>
+  
+  <joint name="top_plate_rear_joint" type="fixed">
+    <parent link="top_plate_link" />
+    <child link="top_plate_rear_link"/>
+    <origin xyz="-0.36633 0 0.00639" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Base link -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file://$(find husky_minimal)/meshes/base_link.dae" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${base_z_size/4}" rpy="0 0 0" />
+      <geometry>
+        <box size="${base_x_size} ${base_y_size} ${base_z_size/2}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="46.034" />
+      <origin xyz="-0.00065 -0.085 0.062" />
+      <inertia ixx="0.6022" ixy="-0.02364" ixz="-0.1197" 
+              iyy="1.7386" iyz="-0.001544" izz="2.0296" />
+    </inertial>
+  </link>
+
+  <gazebo reference="base_link">
+    <gravity>true</gravity>
+    <self_collide>false</self_collide>
+  </gazebo>
+
+  <!-- Base footprint -->
+  <link name="base_footprint"/>
+  
+  <joint name="base_footprint_joint" type="fixed">
+    <origin xyz="0 0 ${wheel_vertical_offset - wheel_radius}" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="base_footprint" />
+  </joint>
+
+  <!-- Front wheels -->
+  <xacro:macro name="front_wheel" params="prefix reflect">
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="file://$(find husky_minimal)/meshes/wheel.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <inertia ixx="0.0246688" ixy="0" ixz="0"
+                 iyy="0.0246688" iyz="0" izz="0.0441058"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_wheel" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel_link"/>
+      <origin xyz="${wheelbase/2} ${reflect * track/2} ${wheel_vertical_offset}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <gazebo reference="${prefix}_wheel_link">
+      <material>Gazebo/DarkGrey</material>
+      <mu1>1.0</mu1>
+      <mu2>0.2</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+      <minDepth>0.001</minDepth>
+      <maxVel>10.0</maxVel>
+      <fdir1>1 0 0</fdir1>
+    </gazebo>
+  </xacro:macro>
+
+  <!-- Rear wheels -->
+  <xacro:macro name="rear_wheel" params="prefix reflect">
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="file://$(find husky_minimal)/meshes/wheel.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <inertia ixx="0.0246688" ixy="0" ixz="0"
+                 iyy="0.0246688" iyz="0" izz="0.0441058"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_wheel" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel_link"/>
+      <origin xyz="${-wheelbase/2} ${reflect * track/2} ${wheel_vertical_offset}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <gazebo reference="${prefix}_wheel_link">
+      <material>Gazebo/DarkGrey</material>
+      <mu1>1.0</mu1>
+      <mu2>0.2</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+      <minDepth>0.001</minDepth>
+      <maxVel>10.0</maxVel>
+      <fdir1>1 0 0</fdir1>
+    </gazebo>
+  </xacro:macro>
+
+  <!-- Instantiate wheels -->
+  <xacro:front_wheel prefix="front_left" reflect="1"/>
+  <xacro:front_wheel prefix="front_right" reflect="-1"/>
+  <xacro:rear_wheel prefix="rear_left" reflect="1"/>
+  <xacro:rear_wheel prefix="rear_right" reflect="-1"/>
+
+  <!-- Lidar Link -->
+  <link name="lidar_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.07"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- Joint connecting lidar to base_link -->
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0.0 0 0.4" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Lidar Sensor (Gazebo plugin) -->
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <topic>scan</topic>
+      <gz_frame_id>lidar_link</gz_frame_id>
+      <update_rate>10</update_rate>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.12</min>
+          <max>10.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+      <always_on>1</always_on>
+      <visualize>true</visualize>
+    </sensor>
+  </gazebo>
+
+  <!-- IMU Link -->
+  <link name="imu_link"/>
+
+  <joint name="imu_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+  </joint>
+
+  <!-- IMU Sensor -->
+  <gazebo reference="imu_link">
+    <sensor name="imu" type="imu">
+      <always_on>true</always_on>
+      <update_rate>200</update_rate>
+      <visualize>true</visualize>
+      <topic>imu</topic>
+      <enable_metrics>true</enable_metrics>
+      <gz_frame_id>imu_link</gz_frame_id>
+    </sensor>
+  </gazebo>
+
+  <!-- Native Gazebo Differential Drive Plugin -->
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>front_left_wheel</left_joint>
+      <left_joint>rear_left_wheel</left_joint>
+      <right_joint>front_right_wheel</right_joint>
+      <right_joint>rear_right_wheel</right_joint>
+      <wheel_separation>0.556</wheel_separation>
+      <wheel_radius>0.1651</wheel_radius>
+      <max_linear_acceleration>1.0</max_linear_acceleration>
+      <max_angular_acceleration>1.5</max_angular_acceleration>
+      <min_acceleration>-1.0</min_acceleration>
+      <topic>cmd_vel</topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_link</child_frame_id>
+    </plugin>
+    
+    <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+      <odom_frame>odom</odom_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+      <odom_publish_frequency>50</odom_publish_frequency>
+      <odom_topic>/odom</odom_topic>
+      <tf_topic>/tf</tf_topic>
+    </plugin>
+    
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+      <topic>joint_states</topic>
+      <joint_name>front_left_wheel</joint_name>
+      <joint_name>front_right_wheel</joint_name>
+      <joint_name>rear_left_wheel</joint_name>
+      <joint_name>rear_right_wheel</joint_name>
+    </plugin>
+  </gazebo>
+
+</robot>
