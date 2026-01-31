@@ -232,12 +232,12 @@ slam_toolbox:
 Watch these demonstrations to see the system in action:
 
 ### SLAM Mapping Demo
-![SLAM Demo](slam.mkv)
+![SLAM Demo](slam.mp4)
 
 Real-time map building as the robot explores the environment using slam_toolbox.
 
 ### Autonomous Navigation Demo
-![Navigation Demo](nav.mkv)
+![Navigation Demo](nav.mp4)
 
 Nav2 path planning and execution with dynamic obstacle avoidance.
 
