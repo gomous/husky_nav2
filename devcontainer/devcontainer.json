@@ -1,0 +1,47 @@
+{
+  "name": "ROS2 Humble Warehouse Robot",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  
+  "runArgs": [
+    "--privileged",
+    "--env", "NVIDIA_VISIBLE_DEVICES=all",
+    "--env", "NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute",
+    "--env", "__NV_PRIME_RENDER_OFFLOAD=1",
+    "--env", "__GLX_VENDOR_LIBRARY_NAME=nvidia",
+    "--net=host",
+    "--gpus=all",
+    "-e", "DISPLAY=${env:DISPLAY}"
+  ],
+
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
+    "source=${localEnv:HOME}/.Xauthority,target=/home/rosdev/.Xauthority,type=bind"
+  ],
+
+  "containerEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}",
+    "ROS_DISTRO": "humble"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-vscode.cpptools",
+        "ms-iot.vscode-ros"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  "postCreateCommand": "sudo rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --symlink-install",
+  
+  "remoteUser": "rosdev",
+  
+  "workspaceFolder": "/workspaces/warehouse_robot"
+}
