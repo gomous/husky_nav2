@@ -230,10 +230,10 @@ slam_toolbox:
 ## 📹 Demo Videos
    
    ### SLAM Mapping
-   https://user-images.githubusercontent.com/12345678/slam.mp4
+   [https://user-images.githubusercontent.com/12345678/slam.mp4](https://github.com/user-attachments/assets/bc090151-5351-4f3c-a5fe-04a1ab096cc7)
    
    ### Navigation  
-   https://user-images.githubusercontent.com/12345678/nav.mp4
+   [https://user-images.githubusercontent.com/12345678/nav.mp4](https://github.com/user-attachments/assets/9fa05edb-998e-4ed6-9f67-cd9abb3fe1aa)
    
 Nav2 path planning and execution with dynamic obstacle avoidance.
 
