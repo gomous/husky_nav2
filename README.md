@@ -228,17 +228,13 @@ slam_toolbox:
 ```
 
 ## 📹 Demo Videos
-
-Watch these demonstrations to see the system in action:
-
-### SLAM Mapping Demo
-![SLAM Demo](slam.mp4)
-
-Real-time map building as the robot explores the environment using slam_toolbox.
-
-### Autonomous Navigation Demo
-![Navigation Demo](nav.mp4)
-
+   
+   ### SLAM Mapping
+   https://user-images.githubusercontent.com/12345678/slam.mp4
+   
+   ### Navigation  
+   https://user-images.githubusercontent.com/12345678/nav.mp4
+   
 Nav2 path planning and execution with dynamic obstacle avoidance.
 
 > **Note**: Video files are located in the root directory of the repository. Download them to view the full demonstrations.
